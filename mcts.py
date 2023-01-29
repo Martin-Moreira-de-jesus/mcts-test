@@ -30,9 +30,7 @@ class Node:
         return len(self.actions_left) != 0
 
     def select(self) -> Node | None:
-        if self.is_leaf():
-            if self.is_terminal():
-                return None
+        if self.is_leaf() or self.is_terminal():
             return self
         else:
             return self.get_best_child().select()
@@ -51,19 +49,19 @@ class Node:
     def simulate(self) -> int:
         state = deepcopy(self.state)
         if state.is_win():
-            return 0 if state.current_player == self.current_player else 1
+            return 1
         while not state.is_draw():
             action = state.get_legal_moves()[random.randint(0, len(state.get_legal_moves()) - 1)]
             state.move(action)
             if state.is_win():
-                return 0 if state.current_player == self.current_player else 1
+                return 1
         return 0
 
     def backpropagate(self, result) -> None:
         self.visits += 1
         self.wins += result
         if self.parent:
-            self.parent.backpropagate(result)
+            self.parent.backpropagate(1 - result)
 
     def get_value(self):
         return self.wins / self.visits
@@ -84,11 +82,11 @@ class Node:
 
 def get_best_move(uttt):
     root = Node(uttt)
-    for _ in range(100000):
+    for _ in range(1000):
         leaf = root.select()
-        if not leaf:
-            result = child.simulate()
-            child.backpropagate(result)
+        if leaf.is_terminal():
+            result = leaf.simulate()
+            leaf.backpropagate(result)
         else:
             child = leaf.expand()
             result = child.simulate()

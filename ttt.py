@@ -36,6 +36,8 @@ class TTT:
         return self.is_full() and not self.is_win()
 
     def get_legal_moves(self):
+        if self.is_win():
+            return []
         return [(i, j) for i in range(3) for j in range(3) if self.board[i][j] == 0]
 
     def game_loop(self):
