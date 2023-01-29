@@ -16,6 +16,9 @@ class TTT:
         self.board[pos[0]][pos[1]] = self.current_player
         self.current_player = -self.current_player
 
+    def player_move(self, pos, player):
+        self.board[pos[0]][pos[1]] = player
+
     def is_legal(self, pos):
         return self.board[pos[0]][pos[1]] == 0
 
@@ -31,6 +34,16 @@ class TTT:
                     all([self.board[i][2] == -self.current_player for i in range(3)]),
                     all([self.board[i][i] == -self.current_player for i in range(3)]),
                     all([self.board[i][2 - i] == -self.current_player for i in range(3)])])
+
+    def is_player_win(self, player):
+        return any([all([self.board[0][i] == player for i in range(3)]),
+                    all([self.board[1][i] == player for i in range(3)]),
+                    all([self.board[2][i] == player for i in range(3)]),
+                    all([self.board[i][0] == player for i in range(3)]),
+                    all([self.board[i][1] == player for i in range(3)]),
+                    all([self.board[i][2] == player for i in range(3)]),
+                    all([self.board[i][i] == player for i in range(3)]),
+                    all([self.board[i][2 - i] == player for i in range(3)])])
 
     def is_draw(self):
         return self.is_full() and not self.is_win()
