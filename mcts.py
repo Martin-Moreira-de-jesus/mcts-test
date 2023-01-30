@@ -82,7 +82,7 @@ class Node:
 
 def get_best_move(uttt):
     root = Node(uttt)
-    for _ in range(1000):
+    for _ in range(10000):
         leaf = root.select()
         if leaf.is_terminal():
             result = leaf.simulate()
@@ -91,9 +91,7 @@ def get_best_move(uttt):
             child = leaf.expand()
             result = child.simulate()
             child.backpropagate(result)
-    print(root.get_best_move())
-    for child in root.children:
-        print(child.action, child.get_value(), child.get_ucb())
+
     return root.get_best_move()
 
 
