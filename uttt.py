@@ -2,9 +2,9 @@ import math
 
 import mcts
 from ttt import TTT
-from mcts import get_best_move
 import pygame
 from constants import Color as C
+from copy import deepcopy
 
 
 def translate_mouse_pos(pos_clicked) -> tuple[tuple[int, int], tuple[int, int]] | None:
@@ -157,6 +157,11 @@ class UTTT:
     def is_draw(self):
         return len(self.get_legal_moves()) == 0 and not self.is_win()
 
+    def is_winnable(self, move) -> bool:
+        uttt_copy = deepcopy(self)
+        uttt_copy.move(move)
+        return uttt_copy.is_win()
+
     def get_legal_moves(self):
         legal_moves = []
         if self.current_board == (-1, -1):
@@ -224,44 +229,3 @@ class UTTT:
         else:
             pygame.draw.rect(surface, C.YELLOW.value,
                              (300 * self.current_board[1] + 25, 300 * self.current_board[0] + 25, 250, 250))
-
-
-if __name__ == '__main__':
-    game = UTTT()
-    game.print()
-    while True:
-        # get pos
-        while True:
-            if game.can_play_anywhere():
-                pos_board = input("Which board do you want to play on ? ")
-                pos_board = pos_board.split(',')
-                pos_board = (int(pos_board[0]), int(pos_board[1]))
-            else:
-                print(f"You're playing on board {game.current_board}")
-                pos_board = game.current_board
-            pos_cell = input("Which cell do you want to play on ? ")
-            pos_cell = pos_cell.split(',')
-            pos_cell = (int(pos_cell[0]), int(pos_cell[1]))
-
-            pos = (pos_board, pos_cell)
-
-            if game.is_legal((pos_board, pos_cell)):
-                break
-
-            print("Illegal move, try again")
-
-        game.move(pos)
-        game.print()
-        if game.is_win():
-            print(f"Player {-game.current_player} won !")
-            exit()
-        action = get_best_move(game)
-        game.move(action)
-        game.print()
-        if game.is_win():
-            print(f"Player {-game.current_player} won !")
-
-        print("IA's turn")
-
-        pos = mcts.get_best_move()
-        

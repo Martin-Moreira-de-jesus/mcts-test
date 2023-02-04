@@ -3,12 +3,12 @@ from __future__ import annotations
 import random
 from math import sqrt, log
 
-from ttt import TTT
+from uttt import UTTT
 from copy import deepcopy
 
 
 class Node:
-    state: TTT
+    state: UTTT
     parent: Node
     children: list[Node]
     wins: int
@@ -46,16 +46,25 @@ class Node:
         self.children.append(child)
         return child
 
-    def simulate(self) -> int:
+    def simulate(self) -> int | float:
         state = deepcopy(self.state)
+        value = 1
         if state.is_win():
-            return 1
+            return value
         while not state.is_draw():
-            action = state.get_legal_moves()[random.randint(0, len(state.get_legal_moves()) - 1)]
+            actions = state.get_legal_moves()
+            for action in actions:
+                if state.is_winnable(action):
+                    return value
+            action = actions[random.randint(0, len(actions) - 1)]
             state.move(action)
             if state.is_win():
-                return 1
-        return 0
+                return value
+            if value == 1:
+                value = 0
+            else:
+                value = 1
+        return 0.5
 
     def backpropagate(self, result) -> None:
         self.visits += 1
@@ -80,9 +89,9 @@ class Node:
         return max(self.children, key=lambda c: c.get_value()).action
 
 
-def get_best_move(uttt):
+def get_best_move(uttt, simulations=2000):
     root = Node(uttt)
-    for _ in range(10000):
+    for _ in range(simulations):
         leaf = root.select()
         if leaf.is_terminal():
             result = leaf.simulate()
@@ -91,26 +100,9 @@ def get_best_move(uttt):
             child = leaf.expand()
             result = child.simulate()
             child.backpropagate(result)
-
+    for child in root.children:
+        print("action=", child.action)
+        print(f'value=%.2f' % child.get_value())
+        print(f'visits=%d' % child.visits)
+        print(f'visits/parent=%.2f' % (child.visits / root.visits))
     return root.get_best_move()
-
-
-if __name__ == '__main__':
-    uttt = TTT()
-    uttt.print()
-    while not uttt.is_full():
-        while True:
-            print("Enter position: ")
-            pos = input().split(',')
-            pos = (int(pos[0]), int(pos[1]))
-            if uttt.is_legal(pos):
-                break
-        uttt.move(pos)
-        uttt.print()
-        if uttt.is_win():
-            break
-        best_move = get_best_move(uttt)
-        uttt.move(best_move)
-        uttt.print()
-        if uttt.is_win():
-            break

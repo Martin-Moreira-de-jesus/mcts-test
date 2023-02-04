@@ -4,7 +4,7 @@ from typing import Tuple, List
 
 import constants
 import mcts
-from color import Color as C
+from constants import Color as C
 from uttt import UTTT, draw_grids, translate_mouse_pos
 
 try:
@@ -48,13 +48,15 @@ def main():
 
     # Update screen
     pygame.display.flip()
-
+    check_move = False
     # Event loop
     running = True
     while running:
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False
+            elif event.type == KEYDOWN and event.key == K_c:
+                check_move = True
             elif event.type == MOUSEBUTTONDOWN:
                 result = translate_mouse_pos(event.pos)
                 if result is not None:
@@ -68,7 +70,9 @@ def main():
                         if uttt.is_win():
                             print('Human wins')
                             running = False
+
                         result = mcts.get_best_move(uttt)
+
                         uttt.move(result)
                         update_main_view(background, screen, uttt)
 
