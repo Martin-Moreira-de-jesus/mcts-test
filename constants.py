@@ -1,6 +1,6 @@
 from enum import Enum
 
-SCREEN_SIZE = (900, 900)
+SCREEN_SIZE = (900, 1000)
 
 
 class Color(Enum):
@@ -18,3 +18,10 @@ class Color(Enum):
     PINK = (255, 192, 203)
     BROWN = (165, 42, 42)
     GREY = (128, 128, 128)
+
+
+class Scene(Enum):
+    MAIN_MENU = 0
+    TURNS = 1
+    HUMAN_VS_IA = 2
+    AI_VS_AI = 3

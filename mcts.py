@@ -53,9 +53,9 @@ class Node:
             return value
         while not state.is_draw():
             actions = state.get_legal_moves()
-            for action in actions:
-                if state.is_winnable(action):
-                    return value
+            # for action in actions:
+            #     if state.is_winnable(action):
+            #         return value
             action = actions[random.randint(0, len(actions) - 1)]
             state.move(action)
             if state.is_win():
@@ -89,7 +89,7 @@ class Node:
         return max(self.children, key=lambda c: c.get_value()).action
 
 
-def get_best_move(uttt, simulations=2000):
+def get_best_move(uttt, simulations=1000):
     root = Node(uttt)
     for _ in range(simulations):
         leaf = root.select()
@@ -100,9 +100,9 @@ def get_best_move(uttt, simulations=2000):
             child = leaf.expand()
             result = child.simulate()
             child.backpropagate(result)
-    for child in root.children:
-        print("action=", child.action)
-        print(f'value=%.2f' % child.get_value())
-        print(f'visits=%d' % child.visits)
-        print(f'visits/parent=%.2f' % (child.visits / root.visits))
+    # for child in root.children:
+    #     print("action=", child.action)
+    #     print(f'value=%.2f' % child.get_value())
+    #     print(f'visits=%d' % child.visits)
+    #     print(f'visits/parent=%.2f' % (child.visits / root.visits))
     return root.get_best_move()
