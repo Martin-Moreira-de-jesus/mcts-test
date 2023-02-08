@@ -1,6 +1,5 @@
 import math
 
-import mcts
 from ttt import TTT
 import pygame
 from constants import Color as C
@@ -91,6 +90,7 @@ class UTTT:
         self.current_player = 1
         self.current_board = (-1, -1)
         self.won_boards = [[0 for _ in range(3)] for _ in range(3)]
+        self.moves_played = 0
 
     def get_board(self, i, j):
         return self.boards[i][j]
@@ -135,6 +135,7 @@ class UTTT:
             self.current_board = pos_cell
 
         self.current_player = -self.current_player
+        self.moves_played += 1
 
     def is_legal(self, pos):
         return pos in self.get_legal_moves()
@@ -229,3 +230,6 @@ class UTTT:
         else:
             pygame.draw.rect(surface, C.YELLOW.value,
                              (300 * self.current_board[1] + 25, 300 * self.current_board[0] + 25, 250, 250))
+
+    def is_terminal(self):
+        return self.is_win() or self.is_draw()
